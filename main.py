@@ -1,23 +1,12 @@
 import settings
 import discord
-import requests
-import json
 from discord.ext import commands
 from discord import app_commands
+from utils import cf_api
+import json
 
+cf = cf_api.Codeforces_API()
 logger = settings.logging.getLogger('client')
-url = "https://codeforces.com/api"
-
-def get_user_info(handle):
-    response = requests.get(url + "/user.info?handles=" + handle)
-    response = json.loads(response.text)
-    return {
-        'handle': handle,
-        'rating': response['result'][0]['rating'],
-        'maxRating': response['result'][0]['maxRating'],
-        'rank': response['result'][0]['rank'],
-        'maxRank': response['result'][0]['maxRank']
-    }
 
 def main():
     intents = discord.Intents.all()
@@ -30,30 +19,30 @@ def main():
     async def on_ready():
         # 將 info 訊息打印在 logs
         logger.info(f'User: {client.user} (ID: {client.user.id})')
-
-        for cmd_file in settings.CMDS_DIR.glob("*.py"):
-            if cmd_file != "__init__.py":
-                await client.load_extension(f"cmds.{cmd_file.name[:-3]}")
         
+        # 下載 cogs 的程式
         for cogs_file in settings.COGS_DIR.glob("*.py"):
             if cogs_file != "__init__.py":
                 await client.load_extension(f"cogs.{cogs_file.name[:-3]}")
         
-        # await client.load_extension("slashcmds.math_")
-
+        # 斜線指令同步
         client.tree.copy_global_to(guild=settings.GUILD_ID)
         await client.tree.sync(guild=settings.GUILD_ID)
 
-    @client.command()
-    async def reload(ctx, cogs):
-        await client.reload_extension(f"cogs.{cogs}")
+        # 準備好就在頻道打印 Bot ready
+        logging_channel = await client.fetch_channel(settings.LOGGING_CHANNEL)
+        await logging_channel.send(f"Bot ready")
+
+        # 抓取 problem_list
+        problem_list = await cf.get_problem_list()
+        with open('problem_list.json', 'w') as f:
+            json.dump(problem_list, f)
+
 
     @client.command()
-    async def user(ctx, handle):
-        response = get_user_info(handle)
-        user_info = f"Handle: {response['handle']}\nRating: {response['rating']}\nMax Rating: {response['maxRating']}\nRank: {response['rank']}\nMax Rank: {response['maxRank']}"
-        await ctx.send(user_info)
-    
+    async def reload(ctx, cogs):
+        await client.reload_extension(f"cogs.{cogs}")        
+
     client.run(settings.BOT_TOKEN, root_logger=True)
 
 if __name__ == '__main__':

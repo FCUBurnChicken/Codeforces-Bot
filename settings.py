@@ -15,6 +15,7 @@ CMDS_DIR = BASE_DIR / "cmds"
 COGS_DIR = BASE_DIR / "cogs"
 
 GUILD_ID = discord.Object(id=int(os.getenv('GUILD_ID')))
+LOGGING_CHANNEL = os.getenv('LOGGING_CHANNEL')
 
 LOGGING_CONFIG = {
     "version": 1,
