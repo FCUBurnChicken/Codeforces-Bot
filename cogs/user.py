@@ -22,8 +22,8 @@ class User(commands.Cog):
         }
     
     def get_AC_problem(self, handle):
-        response = requests.get(url + "/user.status?handle=" + handle).text
-        response = json.loads(response)
+        response = requests.get(url + "/user.status?handle=" + handle)
+        response = json.loads(response.text)
         problem = []
         for i in range(len(response['result'])):
             if response['result'][i]['verdict'] == 'OK' and [response['result'][i]['problem']['name'], response['result'][i]['problem']['rating'],response['result'][i]['problem']['tags']] not in problem:
