@@ -32,6 +32,15 @@ class User(commands.Cog):
             'rank': response['result'][0]['rank'],
             'maxRank': response['result'][0]['maxRank']
         }
+    
+    def get_AC_problem(self, handle):
+        response = requests.get(url + "/user.status?handle=" + handle)
+        response = json.loads(response.text)
+        problem = []
+        for i in range(len(response['result'])):
+            if response['result'][i]['verdict'] == 'OK' and [response['result'][i]['problem']['name'], response['result'][i]['problem']['rating'],response['result'][i]['problem']['tags']] not in problem:
+                problem.append([response['result'][i]['problem']['name'], response['result'][i]['problem']['rating'],response['result'][i]['problem']['tags']])
+        return problem
 
     @commands.hybrid_command()
     async def user(self, ctx, handle: str):
