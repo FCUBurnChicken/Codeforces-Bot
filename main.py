@@ -33,10 +33,18 @@ def main():
         logging_channel = await client.fetch_channel(settings.LOGGING_CHANNEL)
         await logging_channel.send(f"Bot ready")
 
-        # 抓取 problem_list
-        problem_list = await cf.get_problem_list()
-        with open('problem_list.json', 'w') as f:
-            json.dump(problem_list, f)
+        
+        # tags = ["2-sat", "chinese remainder theorem", "combinatorics", "constructive algorithms",
+        #         "data structures", "dfs and similar", "divide and conquer", "dp", "dsu",
+        #         "expression parsing", "fft", "flows", "games", "geometry", "graph", "matchings", 
+        #         "graphs", "hashing", "interactive", "implementation", "math", "matrices meet-in-the-middle", 
+        #         "number theory", "probabilities", "schedules", "shortest paths", "sortings", 
+        #         "string suffix structures", "strings", "ternary search", "trees","two pointers"]
+
+        # for tag in tags:
+        #     with open(f'problems/{tag}.json', 'w') as f:
+        #         new_problem_list = await cf.classify_problems(problem_list, tag)
+        #         json.dump(new_problem_list, f)
 
 
     @client.command()

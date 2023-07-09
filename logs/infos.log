@@ -1,2 +1,15 @@
-INFO       - 2023-07-07 22:36:59,561 - client          : logging in using static token
-INFO       - 2023-07-07 22:37:00,795 - gateway         : Shard ID None has connected to Gateway (Session ID: 691d9fec10427d5251c544da8eab4b6c).
+INFO       - 2023-07-08 21:27:12,576 - client          : logging in using static token
+INFO       - 2023-07-08 21:27:13,889 - gateway         : Shard ID None has connected to Gateway (Session ID: 40d10ac78f83a015383ea6a78488275b).
+INFO       - 2023-07-08 22:28:09,755 - gateway         : Shard ID None has successfully RESUMED session 40d10ac78f83a015383ea6a78488275b.
+WARNING    - 2023-07-09 11:18:54,350 - gateway         : Shard ID None has stopped responding to the gateway. Closing and restarting.
+INFO       - 2023-07-09 11:18:54,875 - gateway         : Shard ID None session has been invalidated.
+INFO       - 2023-07-09 11:19:00,827 - gateway         : Shard ID None has connected to Gateway (Session ID: 97923cda1939ec1fdcbe788b11b1428e).
+ERROR      - 2023-07-09 11:19:02,841 - client          : Ignoring exception in on_ready
+Traceback (most recent call last):
+  File "D:\Project\Lockout-Bot2.0\.venv\lib\site-packages\discord\client.py", line 441, in _run_event
+    await coro(*args, **kwargs)
+  File "D:\Project\Lockout-Bot2.0\main.py", line 26, in on_ready
+    await client.load_extension(f"cogs.{cogs_file.name[:-3]}")
+  File "D:\Project\Lockout-Bot2.0\.venv\lib\site-packages\discord\ext\commands\bot.py", line 1007, in load_extension
+    raise errors.ExtensionAlreadyLoaded(name)
+discord.ext.commands.errors.ExtensionAlreadyLoaded: Extension 'cogs.user' is already loaded.

@@ -17,6 +17,10 @@ COGS_DIR = BASE_DIR / "cogs"
 GUILD_ID = discord.Object(id=int(os.getenv('GUILD_ID')))
 LOGGING_CHANNEL = os.getenv('LOGGING_CHANNEL')
 
+path = 'problem_list.json'
+ALL_PROBLEMS = os.path.abspath(path)
+
+
 LOGGING_CONFIG = {
     "version": 1,
     "disabled_existing_loggers": False,
