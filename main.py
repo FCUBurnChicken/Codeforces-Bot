@@ -3,9 +3,11 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from utils import cf_api
+from data import connect
 import json
 
 cf = cf_api.Codeforces_API()
+conn = connect.Connect()
 logger = settings.logging.getLogger('client')
 
 def main():
@@ -32,19 +34,16 @@ def main():
         # 準備好就在頻道打印 Bot ready
         logging_channel = await client.fetch_channel(settings.LOGGING_CHANNEL)
         await logging_channel.send(f"Bot ready")
-
         
-        # tags = ["2-sat", "chinese remainder theorem", "combinatorics", "constructive algorithms",
-        #         "data structures", "dfs and similar", "divide and conquer", "dp", "dsu",
-        #         "expression parsing", "fft", "flows", "games", "geometry", "graph", "matchings", 
-        #         "graphs", "hashing", "interactive", "implementation", "math", "matrices meet-in-the-middle", 
-        #         "number theory", "probabilities", "schedules", "shortest paths", "sortings", 
-        #         "string suffix structures", "strings", "ternary search", "trees","two pointers"]
+        # 將所有題目放入
+        with open("problem_list.json") as f:
+            problem_list = json.load(f)
+        for problem in problem_list:
+            if problem.get("rating") != None:
+                conn.write(problem['contestId'], problem['index'], problem['name'], problem['rating'], problem['tags'])
+                print(f"{problem['name']} OK")
 
-        # for tag in tags:
-        #     with open(f'problems/{tag}.json', 'w') as f:
-        #         new_problem_list = await cf.classify_problems(problem_list, tag)
-        #         json.dump(new_problem_list, f)
+        conn.close()
 
 
     @client.command()

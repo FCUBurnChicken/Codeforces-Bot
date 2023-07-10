@@ -1,0 +1,21 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Enabled",
+                "ssl": {
+                    "ca": "D:\\Project\\Lockout-Bot2.0\\DigiCertGlobalRootCA.crt.pem"
+                }
+            },
+            "previewLimit": 50,
+            "server": "fcuburnchicken-mysql.mysql.database.azure.com",
+            "port": 3306,
+            "driver": "MySQL",
+            "username": "myadmin",
+            "password": "05150514avmKL!",
+            "name": "test",
+            "database": "codeforces"
+        }
+    ]
+}
