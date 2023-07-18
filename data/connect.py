@@ -83,6 +83,21 @@ class Connect:
             self.conn.rollback()
         return
     
+    # 利用 TAG 找題目
+    def find_problem_by_tags(self, tags):
+        if tags[0] != "None":
+            sql = "SELECT * FROM Problem_List WHERE PROBLEM_Tags LIKE '%" + tags[0] + "%'"
+            for tag in tags[1:]:
+                sql += " AND PROBLEM_Tags LIKE '%" + tag + "%'"
+        else:
+            sql = "SELECT * FROM Problem_List"
+        self.cursor.execute(sql)
+        rows = self.cursor.fetchall()
+        problems = []
+        for row in rows:
+            problems.append([row[0], row[1], row[2], row[3], row[4]])
+        return problems
+
     # 關閉資料庫
     def close(self):
         self.cursor.close()
