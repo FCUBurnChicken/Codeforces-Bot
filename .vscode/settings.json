@@ -3,9 +3,9 @@
         {
             "mysqlOptions": {
                 "authProtocol": "default",
-                "enableSsl": "Enabled",
+                "enableSsl": "Disabled",
                 "ssl": {
-                    "ca": "D:\\Project\\Lockout-Bot2.0\\DigiCertGlobalRootCA.crt.pem"
+                    "ca": "C:\\ssl\\DigiCertGlobalRootCA.crt.pem"
                 }
             },
             "previewLimit": 50,
@@ -13,7 +13,7 @@
             "port": 3306,
             "driver": "MySQL",
             "username": "myadmin",
-            "password": "05150514avmKL!",
+            "password": "cAQ8QgX%sx",
             "name": "test",
             "database": "codeforces"
         }

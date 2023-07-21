@@ -4,10 +4,10 @@ from mysql.connector import errorcode
 class Connect:
     def __init__(self) -> None:
         self.config = {
-            'host':'',
-            'user':'',
-            'password':'',
-            'database':''
+            'host': "fcuburnchicken-mysql.mysql.database.azure.com",
+            'user': "myadmin",
+            'password': "cAQ8QgX%sx",
+            'database': "codeforces",
         }
         try: 
             self.conn = connector.connect(**self.config)
@@ -93,10 +93,67 @@ class Connect:
         except:
             self.conn.rollback()
         return
+
+    def build_handles(self):
+        sql = """
+                CREATE TABLE IF NOT EXISTS handles(
+                    guild BIGINT,
+                    discord_id BIGINT,
+                    cf_handle TEXT,
+                    rating INT,
+                    rank_ TEXT,
+                    photo TEXT
+                );
+              """
+        curr = self.conn.cursor()
+        curr.execute(sql)
     
+    def add_handle(self, *args):
+        sql = """
+                INSERT INTO handles
+                (guild, discord_id, cf_handle, rating, rank_, photo)
+                VALUES
+                (%s, %s, %s, %s, %s, %s)
+              """
+        curr = self.conn.cursor()
+        curr.execute(sql, args)
+        self.conn.commit()
+    
+    def change_handle(self, *args):
+        sql = """
+                UPDATE handles
+                SET cf_handle = %s, rating = %s, rank_ = %s, photo = %s
+                WHERE guild = %s AND discord_id = %s
+              """
+        curr = self.conn.cursor()
+        curr.execute(sql, args)
+        self.conn.commit()
+
+    def get_handle_info(self, *args):
+        query = """
+                    SELECT * FROM handles
+                    WHERE
+                    guild = %s AND
+                    discord_id = %s
+                """
+        curr = self.conn.cursor()
+        curr.execute(query, args)
+        data = curr.fetchall()
+        curr.close()
+        return None if not data else data[0]
+    
+    def get_all_handle(self):
+        query = """
+                    SELECT * FROM handles
+                """
+        curr = self.conn.cursor()
+        curr.execute(query)
+        data = curr.fetchall()
+        curr.close()
+        return None if not data else data
+
     # 關閉資料庫
     def close(self):
         self.cursor.close()
         self.conn.close()
-        print("Done.")
 
