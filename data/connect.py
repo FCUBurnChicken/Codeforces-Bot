@@ -97,6 +97,16 @@ class Connect:
         for row in rows:
             problems.append([row[0], row[1], row[2], row[3], row[4]])
         return problems
+    
+    # 利用題目rating找題目
+    def find_problem_by_rating(self, min_rating, max_rating):
+        sql = ("SELECT * FROM Problem_List WHERE PROBLEM_RATING >= %s AND PROBLEM_RATING <= %s")
+        self.cursor.execute(sql,(min_rating,max_rating))
+        rows = self.cursor.fetchall()
+        problems = []
+        for row in rows:
+            problems.append([row[0], row[1], row[2], row[3], row[4]])
+        return problems
 
     # 關閉資料庫
     def close(self):
