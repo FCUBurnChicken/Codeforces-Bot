@@ -4,10 +4,10 @@ from mysql.connector import errorcode
 class Connect:
     def __init__(self) -> None:
         self.config = {
-            'host': "fcuburnchicken-mysql.mysql.database.azure.com",
-            'user': "myadmin",
-            'password': "cAQ8QgX%sx",
-            'database': "codeforces",
+            'host': "",
+            'user': "",
+            'password': "",
+            'database': "",
         }
         try: 
             self.conn = connector.connect(**self.config)
@@ -34,18 +34,12 @@ class Connect:
     def build(self):
         self.cursor.execute("DROP TABLE IF EXISTS Problem_List")
         sql = """
-                CREATE TABLE Problem_Tags (
-                    PROBLEM_NAME char(30) NOT NULL,
-                    PROBLEM_TAG char(30)
-                );
-              """
-        self.execute(sql)
-        sql = """
                 CREATE TABLE Problem_List (
                     PROBLEM_ID int,
                     PROBLEM_INDEX char(1),
                     PROBLEM_NAME char(30) NOT NULL,
-                    PROBLEM_RATING  int
+                    PROBLEM_RATING  int,
+                    PROBLEM_Tags char(100) NOT NULL
                 );
               """
         self.execute(sql)
@@ -53,16 +47,11 @@ class Connect:
     # 寫入題目
     def write(self, id, index, name, rating, tags):
         sql = """
-                INSERT INTO Problem_List(PROBLEM_ID, PROBLEM_INDEX, PROBLEM_NAME, PROBLEM_RATING)
-                VALUES (%s, %s, %s, %s)
+                INSERT INTO Problem_List(PROBLEM_ID, PROBLEM_INDEX, PROBLEM_NAME, PROBLEM_RATING, PROBLEM_Tags)
+                VALUES (%s, %s, %s, %s, %s)
               """
-        self.execute(sql, id, index, name, rating)
-        sql = """
-                INSERT INTO Problem_Tags(PROBLEM_NAME, PROBLEM_TAG)
-                VALUES (%s, %s)
-              """
-        for tag in tags:
-            self.execute(sql, name, tag)
+        tags = ','.join(tags)
+        self.execute(sql, id, index, name, rating, tags)
 
     # 讀取題目
     def read(self, sql):
@@ -142,6 +131,7 @@ class Connect:
         curr.close()
         return None if not data else data[0]
     
+
     def get_all_handle(self):
         query = """
                     SELECT * FROM handles
@@ -151,6 +141,51 @@ class Connect:
         data = curr.fetchall()
         curr.close()
         return None if not data else data
+
+    # 利用 TAG 找題目
+    def find_problem_by_tags(self, tags):
+        if tags[0] != "None":
+            sql = "SELECT * FROM Problem_List WHERE PROBLEM_Tags LIKE '%" + tags[0] + "%'"
+            for tag in tags[1:]:
+                sql += " AND PROBLEM_Tags LIKE '%" + tag + "%'"
+        else:
+            sql = "SELECT * FROM Problem_List"
+        self.cursor.execute(sql)
+        rows = self.cursor.fetchall()
+        problems = []
+        for row in rows:
+            problems.append([row[0], row[1], row[2], row[3], row[4]])
+        return problems
+    
+    # 利用題目rating找題目
+    def find_problem_by_rating(self, min_rating, max_rating):
+        sql = ("SELECT * FROM Problem_List WHERE PROBLEM_RATING >= %s AND PROBLEM_RATING <= %s")
+        self.cursor.execute(sql,(min_rating,max_rating))
+        rows = self.cursor.fetchall()
+        problems = []
+        for row in rows:
+            problems.append([row[0], row[1], row[2], row[3], row[4]])
+        return problems
+
+    # 利用題目rating和tag找題目
+    def find_problem_by_tags_and_rating(self, tags, min_rating, max_rating):
+        if tags[0] != "None":
+            sql = "SELECT * FROM Problem_List WHERE PROBLEM_Tags LIKE '%" + tags[0] + "%'"
+            for tag in tags[1:]:
+                sql += " AND PROBLEM_Tags LIKE '%" + tag + "%'"
+        else:
+            sql = "SELECT * FROM Problem_List"
+        if tags[0] != "None":
+            sql += " AND PROBLEM_RATING >= " + str(min_rating) + " AND PROBLEM_RATING <= " + str(max_rating)
+        else:
+            sql += " WHERE PROBLEM_RATING >= " + str(min_rating) + " AND PROBLEM_RATING <= " + str(max_rating)
+        self.cursor.execute(sql)
+        rows = self.cursor.fetchall()
+        problems = []
+        for row in rows:
+            problems.append([row[0], row[1], row[2], row[3], row[4]])
+        return problems
+
 
     # 關閉資料庫
     def close(self):
