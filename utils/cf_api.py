@@ -16,7 +16,8 @@ class Codeforces_API():
             'rating': response['result'][0]['rating'],
             'maxRating': response['result'][0]['maxRating'],
             'rank': response['result'][0]['rank'],
-            'maxRank': response['result'][0]['maxRank']
+            'maxRank': response['result'][0]['maxRank'],
+            'titlePhoto': response['result'][0]['titlePhoto']
         }
 
     def get_AC_problem(self, handle):

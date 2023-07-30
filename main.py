@@ -35,15 +35,8 @@ def main():
         logging_channel = await client.fetch_channel(settings.LOGGING_CHANNEL)
         await logging_channel.send(f"Bot ready")
         
-        # 將所有題目放入
-        with open("problem_list.json") as f:
-            problem_list = json.load(f)
-        for problem in problem_list:
-            if problem.get("rating") != None:
-                conn.write(problem['contestId'], problem['index'], problem['name'], problem['rating'], problem['tags'])
-                print(f"{problem['name']} OK")
-
-        conn.close()
+        conn.build_handles()
+        # conn.close()
 
 
     @client.command()
