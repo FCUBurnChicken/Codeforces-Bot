@@ -98,7 +98,7 @@ class Connect:
             problems.append([row[0], row[1], row[2], row[3], row[4]])
         return problems
     
-    # 利用題目rating找題目
+    # 利用題目 rating 找題目
     def find_problem_by_rating(self, min_rating, max_rating):
         sql = ("SELECT * FROM Problem_List WHERE PROBLEM_RATING >= %s AND PROBLEM_RATING <= %s")
         self.cursor.execute(sql,(min_rating,max_rating))
@@ -108,7 +108,7 @@ class Connect:
             problems.append([row[0], row[1], row[2], row[3], row[4]])
         return problems
 
-    # 利用題目rating和tag找題目
+    # 利用題目 rating 和 tag 找題目
     def find_problem_by_tags_and_rating(self, tags, min_rating, max_rating):
         if tags[0] != "None":
             sql = "SELECT * FROM Problem_List WHERE PROBLEM_Tags LIKE '%" + tags[0] + "%'"
