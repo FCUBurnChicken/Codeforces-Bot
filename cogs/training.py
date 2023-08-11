@@ -11,8 +11,6 @@ class Training(commands.Cog):
         self.client = client
         self.cf = cf_api.Codeforces_API()
         self.db = connect.Connect()
-        self.myview = view.MyViews()
-        self.yesnoviews = view.YesNoViews()
     
     # 訓練指令training
     @commands.hybrid_command(name="training", description="透過詢問使用者的題目難度和題目類型來找出題目")
@@ -22,18 +20,24 @@ class Training(commands.Cog):
             return msg.author == ctx.author and msg.channel == ctx.channel
         msg = await self.client.wait_for("message", check=check)
         await msg.delete()
+        while int(msg.content.split("/")[0]) > int(msg.content.split("/")[1]):
+            await msg_ctx.edit( content = f"錯誤：最低範圍不能高於最高範圍\n" + 
+                                          f"**請重新輸入題目難度範圍(最低/最高)**"
+                                )
+            msg = await self.client.wait_for("message", check=check)
+            await msg.delete()
         min_rating = int(msg.content.split("/")[0])
         max_rating = int(msg.content.split("/")[1])
-        view = self.myview
+        _view = view.MyViews()
         await msg_ctx.edit( content = f"目前的篩選條件：\n" +
                                       f"- 題目難度範圍: {min_rating} ~ {max_rating}\n" +
                                       f"============================================\n" +
                                       f"**請選擇題目類型**\n" +
                                       f"註：因為總共有 36 個 tags 但是 discord 的單個列表只能接受 25 個選項，因此才會有兩個列表\n" +
                                       f"註：每個列表都可以複選",
-                            view = view)
-        await view.wait()
-        tags = view.tags_select
+                            view = _view)
+        await _view.wait()
+        tags = _view.tags_select
         await msg_ctx.edit(content = f"目前的篩選條件：\n" +
                                      f"- 題目難度範圍: {min_rating} ~ {max_rating}\n" +
                                      f"- 題目類型需包含 {'、'.join(map(str, tags))}\n" +
@@ -41,6 +45,16 @@ class Training(commands.Cog):
                                      f"**請輸入你需要的題目數量(最多五題)**", view = None)
         msg = await self.client.wait_for("message", check=check)
         await msg.delete()
+        while int(msg.content) <= 0 or int(msg.content) > 5:
+            await msg_ctx.edit( content = f"錯誤：無法處理你要求的題目數量\n" +
+                                          f"============================================\n" + 
+                                          f"目前的篩選條件：\n" +
+                                          f"- 題目難度範圍: {min_rating} ~ {max_rating}\n" +
+                                          f"- 題目類型需包含 {'、'.join(map(str, tags))}\n" +
+                                          f"============================================\n" + 
+                                          f"**請重新輸入你需要的題目數量(最多五題)**", view = None)
+            msg = await self.client.wait_for("message", check=check)
+            await msg.delete()
         num = int(msg.content)
         handle = self.db.get_handle_info(ctx.guild.id, ctx.author.id)[2]
         await msg_ctx.edit(content= f"目前的篩選條件：\n" +
@@ -59,10 +73,10 @@ class Training(commands.Cog):
             await msg_ctx.edit(content=f"很抱歉，沒有符合該條件的題目，請重新輸入")
             return
         if len(problems) < num:
-            view = self.yesnoviews
-            await msg_ctx.edit(content=f"此篩選條件的題目數量為 {len(problems)}，少於你要求的數量，請問是否繼續", view=view)
-            await view.wait()
-            if view.result:
+            _view = view.YesNoViews()
+            await msg_ctx.edit(content=f"此篩選條件的題目數量為 {len(problems)}，少於你要求的數量，請問是否繼續", view=_view)
+            await _view.wait()
+            if _view.result:
                 num = len(problems)
             else: 
                 return
