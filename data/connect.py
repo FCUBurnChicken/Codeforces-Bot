@@ -4,10 +4,10 @@ from mysql.connector import errorcode
 class Connect:
     def __init__(self) -> None:
         self.config = {
-            'host':' fcuburnchicken-mysql.mysql.database.azure.com',
-            'user':'myadmin',
-            'password':'cAQ8QgX%sx',
-            'database':'codeforces'
+            'host':'',
+            'user':'',
+            'password':'',
+            'database':''
         }
         try: 
             self.conn = connector.connect(**self.config)
@@ -141,31 +141,6 @@ class Connect:
         data = curr.fetchall()
         curr.close()
         return None if not data else data
-
-    # 利用 TAG 找題目
-    def find_problem_by_tags(self, tags):
-        if tags[0] != "None":
-            sql = "SELECT * FROM Problem_List WHERE PROBLEM_Tags LIKE '%" + tags[0] + "%'"
-            for tag in tags[1:]:
-                sql += " AND PROBLEM_Tags LIKE '%" + tag + "%'"
-        else:
-            sql = "SELECT * FROM Problem_List"
-        self.cursor.execute(sql)
-        rows = self.cursor.fetchall()
-        problems = []
-        for row in rows:
-            problems.append([row[0], row[1], row[2], row[3], row[4]])
-        return problems
-    
-    # 利用題目rating找題目
-    def find_problem_by_rating(self, min_rating, max_rating):
-        sql = ("SELECT * FROM Problem_List WHERE PROBLEM_RATING >= %s AND PROBLEM_RATING <= %s")
-        self.cursor.execute(sql,(min_rating,max_rating))
-        rows = self.cursor.fetchall()
-        problems = []
-        for row in rows:
-            problems.append([row[0], row[1], row[2], row[3], row[4]])
-        return problems
 
     # 利用題目rating和tag找題目
     def find_problem_by_tags_and_rating(self, tags, min_rating, max_rating):
