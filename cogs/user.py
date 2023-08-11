@@ -1,6 +1,6 @@
+import time
 import discord
 from discord.ext import commands
-import typing
 from utils import cf_api
 from data import connect
 
@@ -86,44 +86,6 @@ class User(commands.Cog):
         embed.add_field(name='Rating', value="\n".join(rating), inline=True)
         embed.add_field(name="Rank", value="\n".join(rank), inline=True)        
         await ctx.send(embed=embed, ephemeral=True)
-
-    # 訓練指令training
-    @commands.command(name="training", description="透過詢問使用者的題目難度和題目類型來找出題目")
-    async def training(self, ctx: commands.Context):
-        await ctx.send("請輸入題目難度範圍(最低/最高)")
-        def check(msg):
-            return msg.author == ctx.author and msg.channel == ctx.channel
-        msg = await self.client.wait_for("message", check=check)
-        min_rating = int(msg.content.split("/")[0])
-        max_rating = int(msg.content.split("/")[1])
-        await ctx.send("請輸入題目類型(以,分隔)")
-        msg = await self.client.wait_for("message", check=check)
-        tags = msg.content.split(",")
-        await ctx.send("請輸入你需要的題目數量(最多五題)")
-        msg = await self.client.wait_for("message", check=check)
-        num = int(msg.content)
-        handle = self.db.get_handle_info(ctx.guild.id, ctx.author.id)[2]
-        await ctx.send("正在查詢題目，請稍後")
-        problems = self.cf.find_problem_by_tags_and_rating(tags, min_rating, max_rating)
-        AC_problem = self.cf.get_AC_problem(handle)
-        # 去除已經AC的題目
-        for i in problems:
-            if i in AC_problem:
-                problems.remove(i)
-        # 題目數量不足
-        if len(problems) < num:
-            await ctx.send("題目數量不足，請重新輸入")
-            return
-        # 隨機選出題目
-        random_problem = []
-        for i in range(num):
-            # 不能有重複題目
-            random_problem.append(problems.pop(int(time.time()) % len(problems)))
-        # 表格化輸出題目(橫軸第一欄為題目名稱第二欄為難度)
-        embed = discord.Embed(title="Problems", color=0x00ff00)
-        embed.add_field(name="Problem Name", value="\n".join(["[" + i['name'] + "]" + "(https://codeforces.com/problemset/problem/" + str(i['id']) + "/" + i['index'] + ")" for i in random_problem]), inline=True)
-        embed.add_field(name="Rating", value="\n".join([str(i['rating']) for i in random_problem]), inline=True)
-        await ctx.send(embed = embed)
 
         
 async def setup(client: commands.Bot):
