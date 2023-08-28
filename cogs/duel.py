@@ -13,15 +13,30 @@ class Duel(commands.Cog):
         self.db = connect.Connect()
 
     # 對戰指令duel
-    @commands.hybrid_command(name="duel", description="透過tag使用者名稱來進行對戰")
+    @commands.hybrid_command(name="duel", description="透過 tag 使用者名稱來進行對戰")
     async def duel(self, ctx: commands.Context):
-        msg_ctx = await ctx.send(content="**請tag你的對手**", view=None, ephemeral=True)
+        if self.db.get_handle_info(ctx.guild.id, ctx.author.id) == None:
+            await ctx.send(content = f"很抱歉，你還未與機器人註冊 codeforces 帳號")
+            return
+        msg_ctx = await ctx.send(content="**請 tag 你的對手**", view=None, ephemeral=True)
         def check(msg):
             return msg.author == ctx.author and msg.channel == ctx.channel
-        msg = await self.client.wait_for("message", check=check)
-        await msg.delete()
+        who = await self.client.wait_for("message", check=check)
+        await who.delete()
+
         Player1_handle = self.db.get_handle_info(ctx.guild.id, ctx.author.id)[2]
-        Player2_handle = self.db.get_handle_info(ctx.guild.id, msg.mentions[0].id)[2]
+        while who.mentions[0].id == ctx.author.id:
+            await msg_ctx.edit(content = f"很抱歉，你不能 tag 你自己\n" +
+                                         f"**請 tag 其他對手**")
+            who = await self.client.wait_for("message", check=check)
+            await who.delete()
+        while self.db.get_handle_info(ctx.guild.id, who.mentions[0].id) == None:
+            await msg_ctx.edit(content = f"很抱歉，你 tag 的對手還未與機器人註冊該 codeforces 帳號\n" +
+                                         f"**請 tag 其他對手**")
+            who = await self.client.wait_for("message", check=check)
+            await who.delete()
+        Player2_handle = self.db.get_handle_info(ctx.guild.id, who.mentions[0].id)[2]
+
         # 詢問題目難度範圍(僅需詢問發起對戰的人)
         await msg_ctx.edit( content = f"**請輸入題目難度範圍(最低/最高)**"
                             )
@@ -77,7 +92,7 @@ class Duel(commands.Cog):
         embed = discord.Embed(title="Problems", color=0x00ff00)
         embed.add_field(name="Problem Name", value="\n".join([f"[{i[2]}](https://codeforces.com/problemset/problem/{i[0]}/{i[1]})" for i in random_problem]), inline=True)
         embed.add_field(name="Rating", value="\n".join([f"{i[3]}" for i in random_problem]), inline=True)
-        await msg_ctx.edit( content = f"以下是為你所篩選出來的 {num} 道題目\n" +
+        await msg_ctx.edit( content = f"以下是為 {ctx.author} 與 {who.mentions[0].name} 所篩選出來的 {num} 道題目\n" +
                                       f"- 難度介於 {min_rating} ~ {max_rating}\n",
                             embed = embed, 
                             view = None)
