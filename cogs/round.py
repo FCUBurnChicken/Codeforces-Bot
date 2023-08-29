@@ -1,27 +1,13 @@
 import discord
 import time
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
+# from selenium import webdriver
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.chrome.options import Options
 from discord.ext import commands
+from utils import cf_interaction
 from utils import cf_api
 from utils import view
 from data import connect
-
-month = {
-    "01":"Jan",
-    "02":"Feb",
-    "03":"Mar",
-    "04":"Apr",
-    "05":"May",
-    "06":"Jun",
-    "07":"Jul",
-    "08":"Aug",
-    "09":"Sep",
-    "10":"Oct",
-    "11":"Nov",
-    "12":"Dec"
-}
 
 class Round(commands.Cog):
     def __init__(self, client: commands.Bot):
@@ -130,63 +116,21 @@ class Round(commands.Cog):
             # 不能有重複題目
             random_problem.append(problems.pop(int(time.time()) % len(problems)))
         
-        chrome_options = Options()
-        chrome_options.add_argument('--headless')
-        browser = webdriver.Chrome(chrome_options=chrome_options)
-        browser.get("https://codeforces.com")
-        element = browser.find_element(By.XPATH, "//a[@href='/enter?back=%2F']")
-        element.click()
-        time.sleep(2)
-        element = browser.find_element(By.XPATH, "//input[@name='handleOrEmail']")
-        element.send_keys(_round["email"])
-        element = browser.find_element(By.XPATH, "//input[@name='password']")
-        element.send_keys(_round["password"])
-        element = browser.find_element(By.XPATH, "//input[@value='Login']")
-        element.click()
-        time.sleep(2)
-
-        print("Login Success")
-        browser.get("https://codeforces.com/mashup/new")
-        time.sleep(2)
-        element = browser.find_element(By.XPATH, "//input[@name='contestName']")
-        element.send_keys(_round["name"])
-        element = browser.find_element(By.XPATH, "//input[@name='contestDuration']")
-        element.send_keys("180")
+        round = cf_interaction.build_round(_round=_round)
+        round.login()
+        round.move("https://codeforces.com/mashup/new")
+        round.write_round_info()
         problem_msg = await ctx.send(content=f"正在加載 {num} 道題目", view=None, ephemeral=True)
         count = 0
         for problem in random_problem:
             count += 1
-            element = browser.find_element(By.XPATH, "//input[@name='problemQuery']")
-            element.send_keys(f"{problem[0]}-{problem[1]}")
-            element = browser.find_element(By.XPATH, "//img[@alt='Add problem']")
-            element.click()
+            round.add_problems(problem)
             await problem_msg.edit(content=f"第 {count} 道題目加載完成")
-            time.sleep(5)
-        element = browser.find_element(By.XPATH, "//input[@value='Create Mashup Contest']")
-        element.click()
-        time.sleep(2)
-        contestId = browser.current_url.split("/")
-        browser.get(f"https://codeforces.com/gym/edit/{contestId[-1]}")
-        time.sleep(2)
-        element = browser.find_element(By.XPATH, "//input[@name='startDay']")
-        day = _round["startDay"].split("/")
-        element.send_keys(f"{month[day[1]]}/{day[2]}/{day[0]}")
-        element = browser.find_element(By.XPATH, "//input[@name='startTime']")
-        element.send_keys(_round["startTime"])
-        element = browser.find_element(By.XPATH, "//input[@value='Save changes']")
-        element.click()
-        time.sleep(2)
-        browser.get("https://codeforces.com/group/GFWL4cNHNj/contests/add")
-        element = browser.find_element(By.XPATH, "//input[@name='contestIdAndName']")
-        element.send_keys(contestId[-1])
-        element = browser.find_element(By.XPATH, "//input[@value='Add']")
-        element.click()
-        time.sleep(1)
-        element = browser.find_element(By.XPATH, "//input[@value='Yes']")
-        element.click()
+        round.create()
+        round.setupTime()
+        round.add_to_group()
         time.sleep(5)
-        browser.close()
-
+        round.close()
         await msg_ctx.edit(content= f"團練賽已成功建立，請前往 codeforces 查看")
 
 async def setup(client: commands.Bot):

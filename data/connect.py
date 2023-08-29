@@ -4,10 +4,10 @@ from mysql.connector import errorcode
 class Connect:
     def __init__(self) -> None:
         self.config = {
-            'host': "fcuburnchicken-mysql.mysql.database.azure.com",
-            'user': "myadmin",
-            'password': "cAQ8QgX%sx",
-            'database': "codeforces", 
+            'host': "",
+            'user': "",
+            'password': "",
+            'database': "", 
         }
         try: 
             self.conn = connector.connect(**self.config)
