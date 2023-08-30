@@ -2,10 +2,11 @@ import time
 import discord
 from discord.ext import commands
 from utils import cf_api
+from utils import pagination
 from data import connect
 
 class User(commands.Cog):
-    def __init__(self, client) -> None:
+    def __init__(self, client: commands.Bot) -> None:
         self.client = client
         self.cf = cf_api.Codeforces_API()
         self.db = connect.Connect()
@@ -70,23 +71,27 @@ class User(commands.Cog):
     
     @handle.command(name="list", description="列出已註冊名單")
     async def list(self, ctx: commands.Context):
-        all_data = self.db.get_all_handle()
-        discord_id, handle, rating, rank, discord_name = [], [], [], [], []
-        for data in all_data:
-            discord_id.append(data[1])
-            handle.append(data[2])
-            rating.append(str(data[3]))
-            rank.append(data[4])
-        for id in discord_id:
-            user = await self.client.fetch_user(int(id))
-            discord_name.append(user.display_name)
-        embed = discord.Embed(title="所有已註冊的 codeforces 名單", color=discord.Color.dark_green())
-        embed.add_field(name="Handle", value="\n".join(handle), inline=True)
-        # embed.add_field(name="Discord User", value="\n".join(discord_name), inline=True)
-        embed.add_field(name='Rating', value="\n".join(rating), inline=True)
-        embed.add_field(name="Rank", value="\n".join(rank), inline=True)        
-        await ctx.send(embed=embed, ephemeral=True)
-
+        handles = self.db.get_all_handle()
+        data = []
+        for handle in handles:
+            try:
+                user = await self.client.fetch_user(int(handle[1]))
+            except:
+                print(f"{handle[2]} 不存在")
+                continue
+            data.append([{
+                "label": "name",
+                "item": user.display_name,
+            },{
+                "label": "handle",
+                "item": handle[2],
+            },{
+                "label": "rating",
+                "item": str(handle[3]),
+            }])
+        pagination_view = pagination.PaginationView(timeout=None)
+        pagination_view.data = data
+        await pagination_view.send(ctx)
         
 async def setup(client: commands.Bot):
     await client.add_cog(User(client))

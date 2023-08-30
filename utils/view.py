@@ -1,5 +1,5 @@
 import discord
-import json 
+import json
 
 with open('selection.json') as f:
     data = json.load(f)
@@ -43,7 +43,7 @@ class MyViews(discord.ui.View):
         self.tags_select = self.tags_select1 + self.tags_select2
         self.stop()
 
-class YesNoViews(discord.ui.View):
+class ConfirmViews(discord.ui.View):
     def __init__(self, timeout = 180):
         super().__init__(timeout=timeout)
         self.result = []
