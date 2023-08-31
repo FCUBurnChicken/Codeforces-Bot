@@ -1,14 +1,13 @@
 import settings
 import discord
 from discord.ext import commands
-from discord import app_commands
 from utils import cf_api
 from data import connect
-import json
 
 cf = cf_api.Codeforces_API()
 conn = connect.Connect()
 logger = settings.logging.getLogger('client')
+
 
 def main():
     intents = discord.Intents.all()
@@ -35,14 +34,13 @@ def main():
         logging_channel = await client.fetch_channel(settings.LOGGING_CHANNEL)
         await logging_channel.send(f"Bot ready")
         
+        # 創建資料庫
         conn.build_handles()
-        # conn.close()
-
 
     @client.command()
     async def reload(ctx, cogs):
-        await client.reload_extension(f"cogs.{cogs}")        
-
+        await client.reload_extension(f"cogs.{cogs}") 
+    
     client.run(settings.BOT_TOKEN, root_logger=True)
 
 if __name__ == '__main__':

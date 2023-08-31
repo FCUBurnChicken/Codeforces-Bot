@@ -86,8 +86,8 @@ class Connect:
     def build_handles(self):
         sql = """
                 CREATE TABLE IF NOT EXISTS handles(
-                    guild BIGINT,
                     discord_id BIGINT,
+                    discord_name TEXT,
                     cf_handle TEXT,
                     rating INT,
                     rank_ TEXT,
@@ -100,7 +100,7 @@ class Connect:
     def add_handle(self, *args):
         sql = """
                 INSERT INTO handles
-                (guild, discord_id, cf_handle, rating, rank_, photo)
+                (discord_id, discord_name, cf_handle, rating, rank_, photo)
                 VALUES
                 (%s, %s, %s, %s, %s, %s)
               """
@@ -112,7 +112,7 @@ class Connect:
         sql = """
                 UPDATE handles
                 SET cf_handle = %s, rating = %s, rank_ = %s, photo = %s
-                WHERE guild = %s AND discord_id = %s
+                WHERE discord_name = %s AND discord_id = %s 
               """
         curr = self.conn.cursor()
         curr.execute(sql, args)
@@ -122,8 +122,8 @@ class Connect:
         query = """
                     SELECT * FROM handles
                     WHERE
-                    guild = %s AND
-                    discord_id = %s
+                    discord_id = %s AND
+                    discord_name = %s
                 """
         curr = self.conn.cursor()
         curr.execute(query, args)
@@ -142,40 +142,16 @@ class Connect:
         curr.close()
         return None if not data else data
 
-    # 利用 TAG 找題目
-    def find_problem_by_tags(self, tags):
-        if tags[0] != "None":
-            sql = "SELECT * FROM Problem_List WHERE PROBLEM_Tags LIKE '%" + tags[0] + "%'"
-            for tag in tags[1:]:
-                sql += " AND PROBLEM_Tags LIKE '%" + tag + "%'"
-        else:
-            sql = "SELECT * FROM Problem_List"
-        self.cursor.execute(sql)
-        rows = self.cursor.fetchall()
-        problems = []
-        for row in rows:
-            problems.append([row[0], row[1], row[2], row[3], row[4]])
-        return problems
-    
-    # 利用題目 rating 找題目
-    def find_problem_by_rating(self, min_rating, max_rating):
-        sql = ("SELECT * FROM Problem_List WHERE PROBLEM_RATING >= %s AND PROBLEM_RATING <= %s")
-        self.cursor.execute(sql,(min_rating,max_rating))
-        rows = self.cursor.fetchall()
-        problems = []
-        for row in rows:
-            problems.append([row[0], row[1], row[2], row[3], row[4]])
-        return problems
-
     # 利用題目 rating 和 tag 找題目
     def find_problem_by_tags_and_rating(self, tags, min_rating, max_rating):
-        if tags[0] != "None":
-            sql = "SELECT * FROM Problem_List WHERE PROBLEM_Tags LIKE '%" + tags[0] + "%'"
+        if len(tags) != 0:
+            sql = f"SELECT * FROM Problem_List WHERE (PROBLEM_Tags LIKE '%{tags[0]}%'"
             for tag in tags[1:]:
-                sql += " AND PROBLEM_Tags LIKE '%" + tag + "%'"
+                sql += f" OR PROBLEM_Tags LIKE '%{tag}%'"
+            sql += ")"
         else:
             sql = "SELECT * FROM Problem_List"
-        if tags[0] != "None":
+        if len(tags) != 0:
             sql += " AND PROBLEM_RATING >= " + str(min_rating) + " AND PROBLEM_RATING <= " + str(max_rating)
         else:
             sql += " WHERE PROBLEM_RATING >= " + str(min_rating) + " AND PROBLEM_RATING <= " + str(max_rating)
