@@ -143,7 +143,7 @@ class Connect:
         return None if not data else data
 
     # 利用題目 rating 和 tag 找題目
-    def find_problem_by_tags_and_rating(self, tags, min_rating, max_rating):
+    def find_problem_by_tags_and_rating(self, tags, not_tags, min_rating, max_rating):
         if len(tags) != 0:
             sql = f"SELECT * FROM Problem_List WHERE (PROBLEM_Tags LIKE '%{tags[0]}%'"
             for tag in tags[1:]:
@@ -151,17 +151,23 @@ class Connect:
             sql += ")"
         else:
             sql = "SELECT * FROM Problem_List"
+        if len(not_tags) != 0:
+            sql += f"AND (PROBLEM_Tags NOT LIKE '%{not_tags[0]}%'"
+            for tag in not_tags[1:]:
+                sql += f" AND PROBLEM_Tags NOT LIKE '%{tag}%'"
+            sql += ")"
+
         if len(tags) != 0:
             sql += " AND PROBLEM_RATING >= " + str(min_rating) + " AND PROBLEM_RATING <= " + str(max_rating)
         else:
             sql += " WHERE PROBLEM_RATING >= " + str(min_rating) + " AND PROBLEM_RATING <= " + str(max_rating)
         self.cursor.execute(sql)
+        print(sql)
         rows = self.cursor.fetchall()
         problems = []
         for row in rows:
             problems.append([row[0], row[1], row[2], row[3], row[4]])
         return problems
-
 
     # 關閉資料庫
     def close(self):

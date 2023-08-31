@@ -1,3 +1,3 @@
-WARNING    - 2023-08-31 13:04:06,689 - client          : PyNaCl is not installed, voice will NOT be supported
-INFO       - 2023-08-31 13:04:06,698 - client          : logging in using static token
-INFO       - 2023-08-31 13:04:08,062 - gateway         : Shard ID None has connected to Gateway (Session ID: 68e6567209f7b5993df067164f317f76).
+WARNING    - 2023-08-31 20:17:09,519 - client          : PyNaCl is not installed, voice will NOT be supported
+INFO       - 2023-08-31 20:17:09,531 - client          : logging in using static token
+INFO       - 2023-08-31 20:17:10,821 - gateway         : Shard ID None has connected to Gateway (Session ID: 553adaab6ad446036e9fa5d4d716a5f8).

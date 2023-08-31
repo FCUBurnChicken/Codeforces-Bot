@@ -28,6 +28,7 @@ class Training(commands.Cog):
             await msg.delete()
         min_rating = int(msg.content.split("/")[0])
         max_rating = int(msg.content.split("/")[1])
+        
         _view = view.TagSelect()
         await msg_ctx.edit( content = f"目前的篩選條件：\n" +
                                       f"- 題目難度範圍: {min_rating} ~ {max_rating}\n" +
@@ -38,6 +39,18 @@ class Training(commands.Cog):
                             view = _view)
         await _view.wait()
         tags = _view.tags_select
+
+        _view = view.TagSelect()
+        await msg_ctx.edit( content = f"目前的篩選條件：\n" +
+                                      f"- 題目難度範圍: {min_rating} ~ {max_rating}\n" +
+                                      f"- 題目類型為： `{'`、`'.join(map(str, tags))}`\n" +
+                                      f"============================================\n" +
+                                      f"**請選擇不要的題目類型**\n" +
+                                      f"註：每個列表都可以複選",
+                            view = _view)
+        await _view.wait()
+        not_tags = _view.tags_select
+
         await msg_ctx.edit(content = f"目前的篩選條件：\n" +
                                      f"- 題目難度範圍: {min_rating} ~ {max_rating}\n" +
                                      f"- 題目類型為： `{'`、`'.join(map(str, tags))}`\n" +
@@ -56,13 +69,14 @@ class Training(commands.Cog):
             msg = await self.client.wait_for("message", check=check)
             await msg.delete()
         num = int(msg.content)
-        handle = self.db.get_handle_info(ctx.author.id, ctx.author.display_name)[2]
         await msg_ctx.edit(content= f"目前的篩選條件：\n" +
                                     f"- 題目難度範圍: {min_rating} ~ {max_rating}\n" +
                                     f"- 題目類型為： `{'`、`'.join(map(str, tags))}`\n" +
                                     f"============================================\n" + 
                                     f"正在查詢題目，請稍後", view = None)
-        problems = self.db.find_problem_by_tags_and_rating(tags, min_rating, max_rating)
+        
+        handle = self.db.get_handle_info(ctx.author.id, ctx.author.display_name)[2]
+        problems = self.db.find_problem_by_tags_and_rating(tags, not_tags, min_rating, max_rating)
         AC_problem = self.cf.get_AC_problem(handle)
         # 去除已經AC的題目
         for i in problems:

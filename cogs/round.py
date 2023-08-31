@@ -1,8 +1,4 @@
-import discord
 import time
-# from selenium import webdriver
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.chrome.options import Options
 from discord.ext import commands
 from utils import cf_interaction
 from utils import cf_api
@@ -72,14 +68,26 @@ class Round(commands.Cog):
                             view = _view)
         await _view.wait()
         tags = _view.tags_select
+
+        _view = view.TagSelect()
+        await msg_ctx.edit( content = f"目前的篩選條件：\n" +
+                                      f"- 題目難度範圍: {min_rating} ~ {max_rating}\n" +
+                                      f"- 題目類型為： `{'`、`'.join(map(str, tags))}`\n" +
+                                      f"============================================\n" +
+                                      f"**請選擇不要的題目類型**\n" +
+                                      f"註：每個列表都可以複選",
+                            view = _view)
+        await _view.wait()
+        not_tags = _view.tags_select
+
         await msg_ctx.edit(content = f"目前的篩選條件：\n" +
                                      f"- 題目難度範圍: {min_rating} ~ {max_rating}\n" +
                                      f"- 題目類型為： `{'`、`'.join(map(str, tags))}`\n" +
                                      f"============================================\n" + 
-                                     f"**請輸入你需要的題目數量(最多五題)**", view = None)
+                                     f"**請輸入你需要的題目數量(最多二十題)**", view = None)
         msg = await self.client.wait_for("message", check=check)
         await msg.delete()
-        while int(msg.content) <= 0 or int(msg.content) > 5:
+        while int(msg.content) <= 0 or int(msg.content) > 20:
             await msg_ctx.edit( content = f"錯誤：無法處理你要求的題目數量\n" +
                                           f"============================================\n" + 
                                           f"目前的篩選條件：\n" +
@@ -96,9 +104,12 @@ class Round(commands.Cog):
                                     f"============================================\n" + 
                                     f"正在準備中，請稍後", view = None)
         
-        problems = self.db.find_problem_by_tags_and_rating(tags, min_rating, max_rating)
+        problems = self.db.find_problem_by_tags_and_rating(tags, not_tags, min_rating, max_rating)
         for player in _round['players']:
-            print(player.display_name, player.id)
+            if self.db.get_handle_info(player.id, player.display_name) == None:
+                await msg_ctx.edit(content = f"sorry，{player.display_name} 還未與機器人註冊該 codeforces 帳號\n" +
+                                             f"請重新輸入")
+                return
             handle = self.db.get_handle_info(player.id, player.display_name)[2]
             AC_problem = self.cf.get_AC_problem(handle)
             # 去除已經AC的題目

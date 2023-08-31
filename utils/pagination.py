@@ -2,17 +2,18 @@ from typing import Optional
 import discord
 
 class PaginationView(discord.ui.View):
-    def __init__(self, sep: int = 5 ,timeout: float | None = 180):
+    def __init__(self, sep: int = 5, title: str = "List", timeout: float | None = 180):
         super().__init__(timeout=timeout)
         self.current_page: int = 1
         self.sep = sep
+        self.title = title
 
     async def send(self, ctx):
         self.message = await ctx.send(view=self, ephemeral=True)
         await self.update_message(self.data[:self.sep])
 
     def create_embed(self, data):
-        embed = discord.Embed(title=f"User List Page {self.current_page} / {int(len(self.data) / self.sep) + 1}")
+        embed = discord.Embed(title=f"{self.title} Page {self.current_page} / {int(len(self.data) / self.sep) + 1}")
         for index in range(0, len(data[0])):
             new_data = {"label": "","item": []}
             for item in data:

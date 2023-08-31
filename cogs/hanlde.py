@@ -88,7 +88,7 @@ class Handle(commands.Cog):
                 "label": "rating",
                 "item": str(handle[3]),
             }])
-        pagination_view = pagination.PaginationView(timeout=None)
+        pagination_view = pagination.PaginationView(title="User List")
         pagination_view.data = data
         await pagination_view.send(ctx)
     
@@ -113,7 +113,7 @@ class Handle(commands.Cog):
                 "label": "rating",
                 "item": str(item[3]),
             }])
-        pagination_view = pagination.PaginationView(sep=10)
+        pagination_view = pagination.PaginationView(sep=10, title=f"{handle} Solved Problems List")
         pagination_view.data = data
         await pagination_view.send(ctx)
         
