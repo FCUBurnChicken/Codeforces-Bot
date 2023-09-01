@@ -3,6 +3,8 @@ import discord
 from discord.ext import commands
 from utils import cf_api
 from data import connect
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
 
 cf = cf_api.Codeforces_API()
 conn = connect.Connect()
@@ -29,13 +31,19 @@ def main():
         # 斜線指令同步
         client.tree.copy_global_to(guild=settings.GUILD_ID)
         await client.tree.sync(guild=settings.GUILD_ID)
-
-        # 準備好就在頻道打印 Bot ready
-        logging_channel = await client.fetch_channel(settings.LOGGING_CHANNEL)
-        await logging_channel.send(f"Bot ready")
         
         # 創建資料庫
         conn.build_handles()
+
+    @client.event
+    async def on_connect():
+        logging_channel = await client.fetch_channel(settings.LOGGING_CHANNEL)
+        await logging_channel.send(f"Bot ready")
+    
+    @client.event
+    async def on_disconnect():
+        logging_channel = await client.fetch_channel(settings.LOGGING_CHANNEL)
+        await logging_channel.send(f"Bot left")
 
     @client.command()
     async def reload(ctx, cogs):
