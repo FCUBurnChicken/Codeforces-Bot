@@ -45,7 +45,7 @@ class Connect:
         self.execute(sql)
 
     # 寫入題目
-    def write(self, id, index, name, rating, tags):
+    def add_problem(self, id, index, name, rating, tags):
         sql = """
                 INSERT INTO Problem_List(PROBLEM_ID, PROBLEM_INDEX, PROBLEM_NAME, PROBLEM_RATING, PROBLEM_Tags)
                 VALUES (%s, %s, %s, %s, %s)
@@ -54,15 +54,18 @@ class Connect:
         self.execute(sql, id, index, name, rating, tags)
 
     # 讀取題目
-    def read(self, sql):
-        try:
-            self.cursor.execute(sql)
-            data = list(self.cursor.fetchall()[0])
-            self.conn.commit()
-            return data
-        except:
-            self.conn.rollback()
-        return
+    def get_all_problems(self):
+        query = """
+                    SELECT * FROM Problem_List
+                """
+        curr = self.conn.cursor()
+        curr.execute(query)
+        rows = curr.fetchall()
+        curr.close()
+        problems = []
+        for row in rows:
+            problems.append([row[0], row[1], row[2], row[3], row[4]])
+        return problems
     
     # 讀取題目 TAG
     def read_tags(self, name):
@@ -162,8 +165,8 @@ class Connect:
         else:
             sql += " WHERE PROBLEM_RATING >= " + str(min_rating) + " AND PROBLEM_RATING <= " + str(max_rating)
         self.cursor.execute(sql)
-        print(sql)
         rows = self.cursor.fetchall()
+        self.cursor.close()
         problems = []
         for row in rows:
             problems.append([row[0], row[1], row[2], row[3], row[4]])

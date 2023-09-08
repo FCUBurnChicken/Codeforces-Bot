@@ -19,6 +19,7 @@ class Round(commands.Cog):
             "name": "",
             "startDay": "",
             "startTime": "",
+            "time": "",
             "players": []
         }
         def check(msg):
@@ -34,6 +35,10 @@ class Round(commands.Cog):
         await msg_ctx.edit(content="**請輸入團練賽的開始時間**\n格式：HH:MM\n範例：12:00")
         msg = await self.client.wait_for("message", check=check)
         _round["startTime"]= msg.content
+        await msg.delete()
+        await msg_ctx.edit(content="**請輸入團練賽的時長**\n註：單位為分鐘")
+        msg = await self.client.wait_for("message", check=check)
+        _round["time"]= msg.content
         await msg.delete()
         await msg_ctx.edit(content="**請輸入舉辦人的 codeforces 帳號**")
         msg = await self.client.wait_for("message", check=check)

@@ -49,7 +49,7 @@ class build_round():
         element = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.XPATH, "//input[@name='contestName']")))
         element.send_keys(self._round["name"])
         element = self.browser.find_element(By.XPATH, "//input[@name='contestDuration']")
-        element.send_keys("180")
+        element.send_keys(self._round["time"])
     
     def add_problems(self, problem): # 加入題目
         query = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.XPATH, "//input[@name='problemQuery']")))

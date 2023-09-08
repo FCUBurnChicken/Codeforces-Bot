@@ -1,7 +1,7 @@
 import settings
 import discord
 from discord.ext import commands
-from utils import cf_api
+from utils import cf_api, tasks
 from data import connect
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -31,6 +31,10 @@ def main():
         # 斜線指令同步
         client.tree.copy_global_to(guild=settings.GUILD_ID)
         await client.tree.sync(guild=settings.GUILD_ID)
+
+        scheduler = AsyncIOScheduler()
+        scheduler.add_job(tasks.update_problemset, CronTrigger(hour="6", timezone="Asia/Kolkata"), [client])
+        scheduler.start()
         
         # 創建資料庫
         conn.build_handles()

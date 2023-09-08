@@ -45,3 +45,5 @@ class Codeforces_API():
             return False
         else:
             return response['result']['problems']
+    
+    

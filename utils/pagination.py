@@ -1,4 +1,3 @@
-from typing import Optional
 import discord
 
 class PaginationView(discord.ui.View):
