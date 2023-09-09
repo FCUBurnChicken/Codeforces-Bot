@@ -7,7 +7,7 @@ class Codeforces_API():
     def __init__(self) -> None:
         pass
 
-    def get_user_info(self, handle):
+    async def get_user_info(self, handle):
         response = requests.get(url + "/user.info?handles=" + handle)
         response = json.loads(response.text)
         return {
@@ -19,7 +19,7 @@ class Codeforces_API():
             'titlePhoto': response['result'][0]['titlePhoto']
         }
 
-    def get_AC_problem(self, handle):
+    async def get_AC_problem(self, handle):
         response = requests.get(url + "/user.status?handle=" + handle)
         response = json.loads(response.text)
         problem = []

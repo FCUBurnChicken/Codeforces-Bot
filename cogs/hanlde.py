@@ -46,7 +46,7 @@ class Handle(commands.Cog):
             ctx.command.reset_cooldown(ctx)
             return
         
-        data = self.cf.get_user_info(handle_name)
+        data = await self.cf.get_user_info(handle_name)
         rating, rank = (0, "unrated") if  "rating" not in data else (data['rating'], data['rank'])
         handle, photo =  data['handle'], data['titlePhoto']
         self.db.add_handle(ctx.author.id, ctx.author.display_name, handle, rating, rank, photo)
@@ -61,7 +61,7 @@ class Handle(commands.Cog):
     @handle.command(name="set", description="更新自己的 codeforces 帳號設定")
     @app_commands.describe(handle_name="你的 cf handle 名稱")
     async def set(self, ctx: commands.Context, handle_name: str):
-        data = self.cf.get_user_info(handle_name)
+        data = await self.cf.get_user_info(handle_name)
         rating, rank = (0, "unrated") if  "rating" not in data else (data['rating'], data['rank'])
         handle, photo =  data['handle'], data['titlePhoto']
         self.db.change_handle(handle, rating, rank, photo, ctx.author.display_name, ctx.author.id)
@@ -103,7 +103,7 @@ class Handle(commands.Cog):
             return
 
         handle = handle[2]
-        AC_problems = self.cf.get_AC_problem(handle)
+        AC_problems = await self.cf.get_AC_problem(handle)
         data = []
         for item in AC_problems:
             data.append([{

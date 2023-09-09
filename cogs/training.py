@@ -77,7 +77,7 @@ class Training(commands.Cog):
         
         handle = self.db.get_handle_info(ctx.author.id, ctx.author.display_name)[2]
         problems = self.db.find_problem_by_tags_and_rating(tags, not_tags, min_rating, max_rating)
-        AC_problem = self.cf.get_AC_problem(handle)
+        AC_problem = await self.cf.get_AC_problem(handle)
         # 去除已經AC的題目
         for i in problems:
             if i in AC_problem:

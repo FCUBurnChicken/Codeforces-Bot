@@ -33,7 +33,8 @@ def main():
         await client.tree.sync(guild=settings.GUILD_ID)
 
         scheduler = AsyncIOScheduler()
-        scheduler.add_job(tasks.update_problemset, CronTrigger(hour="6", timezone="Asia/Kolkata"), [client])
+        scheduler.add_job(tasks.update_handle, CronTrigger(day_of_week="0", timezone="Asia/Kolkata"), [client])
+        scheduler.add_job(tasks.update_problemset, CronTrigger(day_of_week="0", timezone="Asia/Kolkata"), [client])
         scheduler.start()
         
         # 創建資料庫

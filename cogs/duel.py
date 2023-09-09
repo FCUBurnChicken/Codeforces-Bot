@@ -67,8 +67,8 @@ class Duel(commands.Cog):
             await msg.delete()
         num = int(msg.content)
         # 選出題目
-        Player1_AC_problem = self.cf.get_AC_problem(Player1_handle)
-        Player2_AC_problem = self.cf.get_AC_problem(Player2_handle)
+        Player1_AC_problem = await self.cf.get_AC_problem(Player1_handle)
+        Player2_AC_problem = await self.cf.get_AC_problem(Player2_handle)
         problems = self.db.find_problem_by_tags_and_rating([], min_rating, max_rating)
         # 去除已經AC的題目
         for i in problems:

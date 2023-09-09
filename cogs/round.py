@@ -116,7 +116,7 @@ class Round(commands.Cog):
                                              f"請重新輸入")
                 return
             handle = self.db.get_handle_info(player.id, player.display_name)[2]
-            AC_problem = self.cf.get_AC_problem(handle)
+            AC_problem = await self.cf.get_AC_problem(handle)
             # 去除已經AC的題目
             for i in problems:
                 if i in AC_problem:
