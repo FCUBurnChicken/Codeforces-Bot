@@ -1,2 +1,9 @@
-BOT_ID = "" # discord 機器人 id
-GUILDS_ID = "" # 伺服器 id
+# 機器人設定
+BOT_ID = ""     # discord 機器人 id
+GUILDS_ID = ""  # 伺服器 id
+
+# 資料庫設定（該資料庫為使用 Azure 的 MySQL 彈性資料庫）
+HOSTNAME = ""   # 伺服器名稱
+USERNAME = ""   # 使用者名稱
+PASSWORD = ""   # 登入密碼
+DATABASE = ""   # 資料庫名稱

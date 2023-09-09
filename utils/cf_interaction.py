@@ -3,21 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
-month = {
-    "01":"Jan",
-    "02":"Feb",
-    "03":"Mar",
-    "04":"Apr",
-    "05":"May",
-    "06":"Jun",
-    "07":"Jul",
-    "08":"Aug",
-    "09":"Sep",
-    "10":"Oct",
-    "11":"Nov",
-    "12":"Dec"
-}
+import calendar
 
 class build_round():
     def __init__(self, _round: dict) -> None:
@@ -68,7 +54,7 @@ class build_round():
         self.move(f"https://codeforces.com/gym/edit/{self.contestId}")
         element = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.XPATH, "//input[@name='startDay']")))
         day = self._round["startDay"].split("/")
-        element.send_keys(f"{month[day[1]]}/{day[2]}/{day[0]}")
+        element.send_keys(f"{calendar.month_abbr[int(day[1])]}/{day[2]}/{day[0]}")
         element = self.browser.find_element(By.XPATH, "//input[@name='startTime']")
         element.send_keys(self._round["startTime"])
         element = self.browser.find_element(By.XPATH, "//input[@value='Save changes']")

@@ -17,6 +17,11 @@ COGS_DIR = BASE_DIR / "cogs"
 GUILD_ID = discord.Object(id=int(os.getenv('GUILD_ID')))
 LOGGING_CHANNEL = os.getenv('LOGGING_CHANNEL')
 
+HOSTNAME = os.getenv('_HOSTNAME')
+USERNAME = os.getenv('_USERNAME') 
+PASSWORD = os.getenv('_PASSWORD')
+DATABASE = os.getenv('_DATABASE')
+
 path = 'problem_list.json'
 ALL_PROBLEMS = os.path.abspath(path)
 

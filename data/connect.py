@@ -1,17 +1,23 @@
+import settings
 import mysql.connector as connector
 from mysql.connector import errorcode
+
+first_connect = True
 
 class Connect:
     def __init__(self) -> None:
         self.config = {
-            'host': "fcuburnchicken-mysql.mysql.database.azure.com",
-            'user': "myadmin",
-            'password': "cAQ8QgX%sx",
-            'database': "codeforces",
+            'host': settings.HOSTNAME,
+            'user': settings.USERNAME,
+            'password': settings.PASSWORD,
+            'database': settings.DATABASE
         }
         try: 
+            global first_connect
             self.conn = connector.connect(**self.config)
-            print("Connection established")
+            if first_connect:
+                print("Connection established")
+                first_connect = False
         except connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                 print("Something is wrong with the user name or password")
